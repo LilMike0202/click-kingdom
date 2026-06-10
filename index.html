@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click Kingdom</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#1e1e2f;
+    color:white;
+    text-align:center;
+    margin:0;
+    padding:40px;
+}
+button{
+    font-size:32px;
+    padding:30px 60px;
+    border:none;
+    border-radius:20px;
+    cursor:pointer;
+}
+table{
+    margin:20px auto;
+    border-collapse:collapse;
+}
+th,td{
+    border:1px solid white;
+    padding:10px 20px;
+}
+</style>
+</head>
+<body>
+<h1>👑 Click Kingdom</h1>
+<p>Click the button to earn points!</p>
+
+<button onclick="addPoint()">+1 Click</button>
+
+<h2>Your Score: <span id="score">0</span></h2>
+
+<h2>Leaderboard</h2>
+<table>
+<tr><th>Player</th><th>Score</th></tr>
+<tr><td>You</td><td id="leaderScore">0</td></tr>
+</table>
+
+<p>🏆 Monthly champion receives a congratulatory email.</p>
+<p>👑 Three months in a row = King of Click</p>
+
+<script>
+let score = 0;
+
+function addPoint(){
+    score++;
+    document.getElementById("score").textContent = score;
+    document.getElementById("leaderScore").textContent = score;
+}
+</script>
+
+</body>
+</html>
