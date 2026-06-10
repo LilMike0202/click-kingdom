@@ -19,7 +19,6 @@ redirectTo: window.location.origin
 }
 });
 });
-
 // Đăng xuất
 logoutBtn.addEventListener(“click”, async () => {
 await supabaseClient.auth.signOut();
