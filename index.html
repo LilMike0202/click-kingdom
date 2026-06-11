@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,289 +8,141 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:        #0d0d1a;
-    --surface:   #13132a;
-    --border:    #2a2a4a;
-    --gold:      #f0c040;
-    --gold-dim:  #a07820;
-    --silver:    #c0c8d8;
-    --bronze:    #cd7f32;
-    --accent:    #7c5cbf;
-    --text:      #e8e4f0;
-    --muted:     #7070a0;
-    --error:     #e05050;
-    --success:   #40c080;
+    --bg: #0d0d1a; --surface: #13132a; --border: #2a2a4a;
+    --gold: #f0c040; --gold-dim: #a07820; --silver: #c0c8d8;
+    --bronze: #cd7f32; --accent: #7c5cbf; --text: #e8e4f0;
+    --muted: #7070a0; --error: #e05050; --success: #40c080;
   }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:32px 16px 60px; }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 16px 60px;
-  }
+  /* Header */
+  header { text-align:center; margin-bottom:36px; }
+  header h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,3.4rem); font-weight:900; letter-spacing:.04em; background:linear-gradient(135deg,#f0c040,#fff0a0,#c08020); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1.1; }
+  header p { margin-top:8px; color:var(--muted); font-size:.95rem; }
 
-  /* ── Header ── */
-  header { text-align: center; margin-bottom: 36px; }
-  header h1 {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(2rem, 6vw, 3.4rem);
-    font-weight: 900;
-    letter-spacing: .04em;
-    background: linear-gradient(135deg, #f0c040 0%, #fff0a0 50%, #c08020 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.1;
-  }
-  header p { margin-top: 8px; color: var(--muted); font-size: .95rem; letter-spacing: .02em; }
+  /* Buttons */
+  .btn { font-family:'Inter',sans-serif; font-size:.85rem; font-weight:600; padding:8px 20px; border:none; border-radius:8px; cursor:pointer; transition:opacity .15s,transform .1s; }
+  .btn:hover { opacity:.85; } .btn:active { transform:scale(.97); }
+  .btn-ghost { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+  .btn-github { background:#24292e; color:white; display:flex; align-items:center; gap:8px; }
+  .btn-email { background:var(--accent); color:white; }
+  .btn-primary { background:var(--accent); color:white; width:100%; padding:11px; font-size:.9rem; border-radius:10px; }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+  .btn-danger { background:#8b2020; color:white; }
 
-  /* ── Buttons ── */
-  .btn {
-    font-family: 'Inter', sans-serif;
-    font-size: .85rem;
-    font-weight: 600;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: opacity .15s, transform .1s;
-  }
-  .btn:hover { opacity: .85; }
-  .btn:active { transform: scale(.97); }
-  .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-  .btn-github { background: #24292e; color: white; display: flex; align-items: center; gap: 8px; }
-  .btn-email  { background: var(--accent); color: white; }
-  .btn-primary { background: var(--accent); color: white; width: 100%; padding: 11px; font-size: .9rem; border-radius: 10px; }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  /* Auth bar */
+  #auth-bar { display:flex; align-items:center; gap:10px; margin-bottom:32px; flex-wrap:wrap; justify-content:center; }
+  #user-info { display:flex; align-items:center; gap:10px; font-size:.9rem; color:var(--silver); }
+  #user-avatar-wrap { position:relative; cursor:pointer; }
+  #user-avatar { width:36px; height:36px; border-radius:50%; border:2px solid var(--gold-dim); object-fit:cover; display:block; }
+  #avatar-placeholder-bar { width:36px; height:36px; border-radius:50%; background:var(--accent); border:2px solid var(--gold-dim); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.9rem; color:white; cursor:pointer; }
+  .avatar-edit-hint { position:absolute; bottom:-2px; right:-2px; background:var(--accent); border-radius:50%; width:14px; height:14px; display:flex; align-items:center; justify-content:center; font-size:8px; }
+  #user-title-bar { font-size:.75rem; padding:2px 7px; border-radius:10px; font-weight:700; }
 
-  /* ── Auth bar ── */
-  #auth-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  #user-info { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--silver); }
-  #user-info img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gold-dim); }
+  /* Modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:#00000090; z-index:100; align-items:center; justify-content:center; padding:16px; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:28px; width:100%; max-width:400px; position:relative; max-height:90vh; overflow-y:auto; }
+  .modal h2 { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--gold); margin-bottom:6px; text-align:center; }
+  .modal-sub { text-align:center; color:var(--muted); font-size:.82rem; margin-bottom:20px; }
+  .modal-close { position:absolute; top:14px; right:18px; background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; }
+  .modal-close:hover { color:var(--text); }
+  .modal-tabs { display:flex; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:18px; }
+  .modal-tab { flex:1; padding:8px; background:transparent; border:none; color:var(--muted); font-family:'Inter',sans-serif; font-size:.83rem; font-weight:600; cursor:pointer; transition:all .15s; }
+  .modal-tab.active { background:var(--accent); color:white; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:.78rem; font-weight:600; color:var(--muted); margin-bottom:5px; letter-spacing:.06em; text-transform:uppercase; }
+  .field input { width:100%; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Inter',sans-serif; font-size:.9rem; outline:none; transition:border-color .15s; }
+  .field input:focus { border-color:var(--accent); }
+  .divider { display:flex; align-items:center; gap:10px; margin:16px 0; color:var(--muted); font-size:.75rem; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .modal-msg { font-size:.82rem; text-align:center; min-height:18px; margin-bottom:8px; }
+  .modal-msg.error { color:var(--error); } .modal-msg.success { color:var(--success); }
 
-  /* ── Modal overlay ── */
-  #modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #00000090;
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-  #modal-overlay.open { display: flex; }
+  /* Score panel */
+  #score-panel { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:28px 40px; text-align:center; margin-bottom:28px; min-width:260px; }
+  #score-panel .label { font-size:.78rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  #score-display { font-family:'Cinzel',serif; font-size:clamp(3rem,10vw,5rem); font-weight:900; color:var(--gold); line-height:1; transition:transform .08s; }
+  #score-display.bump { transform:scale(1.12); }
+  .month-score-row { margin-top:10px; font-size:.82rem; color:var(--muted); }
+  .month-score-row span { color:var(--silver); font-weight:600; }
 
-  #modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 28px;
-    width: 100%;
-    max-width: 380px;
-    position: relative;
-  }
-  #modal h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.3rem;
-    color: var(--gold);
-    margin-bottom: 6px;
-    text-align: center;
-  }
-  #modal .modal-sub {
-    text-align: center;
-    color: var(--muted);
-    font-size: .82rem;
-    margin-bottom: 24px;
-  }
-  .modal-close {
-    position: absolute;
-    top: 14px; right: 18px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 1.4rem;
-    cursor: pointer;
-    line-height: 1;
-  }
-  .modal-close:hover { color: var(--text); }
+  /* Click button */
+  #click-btn { font-family:'Cinzel',serif; font-size:1.5rem; font-weight:700; padding:22px 56px; background:linear-gradient(135deg,#8060d0,#5030a0); color:white; border:none; border-radius:18px; cursor:pointer; box-shadow:0 8px 32px #5030a060; transition:transform .1s,box-shadow .1s,background .3s; margin-bottom:28px; user-select:none; }
+  #click-btn:hover { transform:translateY(-2px); box-shadow:0 12px 40px #5030a080; }
+  #click-btn:active { transform:translateY(1px) scale(.97); }
+  #click-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 
-  /* Modal tabs */
-  .modal-tabs {
-    display: flex;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .modal-tab {
-    flex: 1;
-    padding: 8px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-family: 'Inter', sans-serif;
-    font-size: .83rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .modal-tab.active { background: var(--accent); color: white; }
+  /* Float */
+  .float-point { position:fixed; font-family:'Cinzel',serif; font-weight:900; font-size:1.5rem; color:var(--gold); pointer-events:none; animation:floatUp .7s ease-out forwards; z-index:999; }
+  @keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-60px) scale(1.3)} }
 
-  /* Form fields */
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: 5px; letter-spacing: .06em; text-transform: uppercase; }
-  .field input {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: .9rem;
-    outline: none;
-    transition: border-color .15s;
-  }
-  .field input:focus { border-color: var(--accent); }
+  /* Nav tabs */
+  .page-tabs { display:flex; gap:8px; margin-bottom:24px; }
+  .page-tab { font-family:'Inter',sans-serif; font-size:.85rem; font-weight:600; padding:8px 20px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+  .page-tab.active { background:var(--accent); border-color:var(--accent); color:white; }
 
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 18px 0;
-    color: var(--muted);
-    font-size: .75rem;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  /* Page sections */
+  .page-section { width:100%; max-width:640px; display:none; }
+  .page-section.active { display:block; }
 
-  #modal-msg {
-    font-size: .82rem;
-    text-align: center;
-    min-height: 20px;
-    margin-bottom: 10px;
-  }
-  #modal-msg.error   { color: var(--error); }
-  #modal-msg.success { color: var(--success); }
+  /* Leaderboard */
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .section-title { font-family:'Cinzel',serif; font-size:1.1rem; font-weight:700; color:var(--gold); letter-spacing:.05em; }
+  .month-badge { font-size:.75rem; background:var(--accent); color:white; padding:3px 10px; border-radius:20px; font-weight:600; }
+  .board-tabs { display:flex; gap:8px; margin-bottom:16px; }
+  .tab-btn { font-family:'Inter',sans-serif; font-size:.82rem; font-weight:600; padding:6px 16px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+  .tab-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
+  #leaderboard-table { width:100%; border-collapse:collapse; }
+  #leaderboard-table th { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; }
+  #leaderboard-table th:last-child { text-align:right; }
+  #leaderboard-table td { padding:11px 12px; border-bottom:1px solid #1e1e38; font-size:.9rem; vertical-align:middle; }
+  #leaderboard-table td:last-child { text-align:right; }
+  .rank-cell { font-family:'Cinzel',serif; font-weight:700; font-size:.85rem; color:var(--muted); width:36px; }
+  .rank-1{color:var(--gold)} .rank-2{color:var(--silver)} .rank-3{color:var(--bronze)}
+  .player-cell { display:flex; align-items:center; gap:10px; }
+  .player-cell img { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); object-fit:cover; }
+  .avatar-placeholder { width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; color:white; }
+  .me-tag { font-size:.68rem; background:var(--accent); color:white; padding:1px 6px; border-radius:4px; font-weight:600; margin-left:4px; }
+  .player-title-tag { font-size:.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:4px; }
+  .score-cell { font-family:'Cinzel',serif; font-weight:700; color:var(--gold); }
+  tr.highlight-me td { background:#1e1a3a; }
+  #leaderboard-empty { text-align:center; color:var(--muted); padding:32px; font-size:.9rem; }
+  #loading-overlay { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; }
 
-  /* ── Score panel ── */
-  #score-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 40px;
-    text-align: center;
-    margin-bottom: 28px;
-    min-width: 260px;
-  }
-  #score-panel .label { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-  #score-display {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(3rem, 10vw, 5rem);
-    font-weight: 900;
-    color: var(--gold);
-    line-height: 1;
-    transition: transform .08s;
-  }
-  #score-display.bump { transform: scale(1.12); }
-  .month-score-row { margin-top: 10px; font-size: .82rem; color: var(--muted); }
-  .month-score-row span { color: var(--silver); font-weight: 600; }
+  /* Shop */
+  .shop-balance { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+  .shop-balance .bal-label { font-size:.78rem; color:var(--muted); font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+  .shop-balance .bal-value { font-family:'Cinzel',serif; font-size:1.6rem; font-weight:900; color:var(--gold); }
+  .shop-category { margin-bottom:28px; }
+  .shop-category-title { font-family:'Cinzel',serif; font-size:.95rem; font-weight:700; color:var(--silver); letter-spacing:.06em; text-transform:uppercase; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .shop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+  .shop-item { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 12px; text-align:center; transition:border-color .2s; position:relative; }
+  .shop-item:hover { border-color:var(--accent); }
+  .shop-item.owned { border-color:var(--success); }
+  .shop-item.equipped { border-color:var(--gold); background:#1a1530; }
+  .shop-item-icon { font-size:2rem; margin-bottom:8px; }
+  .shop-item-name { font-weight:700; font-size:.88rem; margin-bottom:4px; }
+  .shop-item-desc { font-size:.75rem; color:var(--muted); margin-bottom:10px; line-height:1.4; }
+  .shop-item-price { font-family:'Cinzel',serif; font-weight:700; color:var(--gold); font-size:.9rem; margin-bottom:10px; }
+  .shop-item-price.free { color:var(--success); }
+  .shop-btn { font-family:'Inter',sans-serif; font-size:.78rem; font-weight:700; padding:6px 14px; border:none; border-radius:8px; cursor:pointer; transition:opacity .15s; width:100%; }
+  .shop-btn.buy { background:var(--accent); color:white; }
+  .shop-btn.equip { background:#2a4a2a; color:var(--success); border:1px solid var(--success); }
+  .shop-btn.equipped-btn { background:#3a3010; color:var(--gold); border:1px solid var(--gold); }
+  .shop-btn:disabled { opacity:.4; cursor:not-allowed; }
+  .owned-badge { position:absolute; top:8px; right:8px; font-size:.65rem; background:var(--success); color:white; padding:2px 6px; border-radius:6px; font-weight:700; }
 
-  /* ── Click button ── */
-  #click-btn {
-    font-family: 'Cinzel', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    padding: 22px 56px;
-    background: linear-gradient(135deg, #8060d0, #5030a0);
-    color: white;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    box-shadow: 0 8px 32px #5030a060;
-    transition: transform .1s, box-shadow .1s;
-    margin-bottom: 36px;
-    user-select: none;
-  }
-  #click-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px #5030a080; }
-  #click-btn:active { transform: translateY(1px) scale(.97); box-shadow: 0 4px 16px #5030a060; }
-  #click-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+  /* Avatar modal */
+  #avatar-preview { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--gold-dim); margin:0 auto 16px; display:block; background:var(--accent); }
+  #avatar-preview-placeholder { width:80px; height:80px; border-radius:50%; background:var(--accent); border:3px solid var(--gold-dim); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:white; }
+  .avatar-upload-area { border:2px dashed var(--border); border-radius:12px; padding:20px; text-align:center; cursor:pointer; margin-bottom:12px; transition:border-color .2s; }
+  .avatar-upload-area:hover { border-color:var(--accent); }
+  .avatar-upload-area input { display:none; }
 
-  /* ── Float +1 ── */
-  .float-point {
-    position: fixed;
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 1.5rem;
-    color: var(--gold);
-    pointer-events: none;
-    animation: floatUp .7s ease-out forwards;
-    z-index: 999;
-  }
-  @keyframes floatUp {
-    0%   { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
-  }
-
-  /* ── Leaderboard ── */
-  #leaderboard-section { width: 100%; max-width: 640px; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .section-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: .05em; }
-  .month-badge { font-size: .75rem; background: var(--accent); color: white; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
-
-  .board-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .tab-btn {
-    font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600;
-    padding: 6px 16px; border-radius: 8px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer; transition: all .15s;
-  }
-  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-  #leaderboard-table { width: 100%; border-collapse: collapse; }
-  #leaderboard-table th { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
-  #leaderboard-table th:last-child { text-align: right; }
-  #leaderboard-table td { padding: 11px 12px; border-bottom: 1px solid #1e1e38; font-size: .9rem; vertical-align: middle; }
-  #leaderboard-table td:last-child { text-align: right; }
-
-  .rank-cell { font-family: 'Cinzel', serif; font-weight: 700; font-size: .85rem; color: var(--muted); width: 36px; }
-  .rank-1 { color: var(--gold); }
-  .rank-2 { color: var(--silver); }
-  .rank-3 { color: var(--bronze); }
-
-  .player-cell { display: flex; align-items: center; gap: 10px; }
-  .player-cell img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); }
-  .avatar-placeholder { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: white; }
-  .me-tag { font-size: .68rem; background: var(--accent); color: white; padding: 1px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
-  .score-cell { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); }
-  tr.highlight-me td { background: #1e1a3a; }
-
-  #leaderboard-empty { text-align: center; color: var(--muted); padding: 32px; font-size: .9rem; }
-  #loading-overlay { color: var(--muted); font-size: .85rem; padding: 20px; text-align: center; }
-
-  footer { margin-top: 48px; text-align: center; color: var(--muted); font-size: .78rem; line-height: 1.8; }
-
-  @media (max-width: 480px) {
-    #click-btn { padding: 18px 36px; font-size: 1.2rem; }
-    #score-panel { padding: 20px 24px; }
-  }
+  footer { margin-top:48px; text-align:center; color:var(--muted); font-size:.78rem; line-height:1.8; }
+  @media(max-width:480px){ #click-btn{padding:18px 36px;font-size:1.2rem} #score-panel{padding:20px 24px} .shop-grid{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
@@ -307,61 +160,14 @@
   </button>
   <button class="btn btn-email" id="login-email-btn">✉️ Email</button>
   <div id="user-info" style="display:none">
-    <img id="user-avatar" src="" alt="" onerror="this.style.display='none'">
+    <div id="user-avatar-wrap" onclick="openAvatarModal()" title="Change avatar">
+      <img id="user-avatar" src="" alt="" onerror="this.style.display='none'">
+      <div id="avatar-placeholder-bar" style="display:none"></div>
+      <div class="avatar-edit-hint">✏️</div>
+    </div>
+    <span id="user-title-bar" style="display:none"></span>
     <span id="user-name"></span>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
-  </div>
-</div>
-
-<!-- Email auth modal -->
-<div id="modal-overlay">
-  <div id="modal">
-    <button class="modal-close" id="modal-close-btn">×</button>
-    <h2>👑 Join the Kingdom</h2>
-    <p class="modal-sub">Sign in to save your score</p>
-
-    <div class="modal-tabs">
-      <button class="modal-tab active" id="tab-signin" onclick="switchModalTab('signin')">Sign In</button>
-      <button class="modal-tab" id="tab-signup" onclick="switchModalTab('signup')">Create Account</button>
-    </div>
-
-    <div id="modal-msg"></div>
-
-    <!-- Sign in form -->
-    <div id="form-signin">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <button class="btn btn-primary" id="signin-submit-btn" onclick="handleSignIn()">Sign In</button>
-    </div>
-
-    <!-- Sign up form -->
-    <div id="form-signup" style="display:none">
-      <div class="field">
-        <label>Display Name</label>
-        <input type="text" id="signup-name" placeholder="Your kingdom name" autocomplete="nickname">
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password">
-      </div>
-      <button class="btn btn-primary" id="signup-submit-btn" onclick="handleSignUp()">Create Account</button>
-    </div>
-
-    <div class="divider">or continue with</div>
-    <button class="btn btn-github" style="width:100%;justify-content:center;gap:8px" onclick="handleGitHub()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-      Continue with GitHub
-    </button>
   </div>
 </div>
 
@@ -375,8 +181,14 @@
 <!-- Click button -->
 <button id="click-btn" disabled>👑 Click to Earn</button>
 
-<!-- Leaderboard -->
-<section id="leaderboard-section">
+<!-- Page tabs -->
+<div class="page-tabs">
+  <button class="page-tab active" onclick="switchPage('leaderboard')">🏆 Leaderboard</button>
+  <button class="page-tab" onclick="switchPage('shop')" id="shop-tab-btn">🛒 Shop</button>
+</div>
+
+<!-- Leaderboard page -->
+<div class="page-section active" id="page-leaderboard" style="max-width:640px;width:100%">
   <div class="section-header">
     <span class="section-title">🏆 Leaderboard</span>
     <span class="month-badge" id="month-label"></span>
@@ -391,7 +203,88 @@
     <tbody id="leaderboard-body"></tbody>
   </table>
   <div id="leaderboard-empty" style="display:none">No scores yet. Be the first to click!</div>
-</section>
+</div>
+
+<!-- Shop page -->
+<div class="page-section" id="page-shop" style="max-width:640px;width:100%">
+  <div class="shop-balance">
+    <div>
+      <div class="bal-label">Your Points</div>
+      <div class="bal-value" id="shop-balance">0</div>
+    </div>
+    <div style="color:var(--muted);font-size:.8rem;text-align:right">Spend points<br>on upgrades</div>
+  </div>
+  <div id="shop-login-msg" style="display:none;text-align:center;color:var(--muted);padding:32px">Login to access the shop</div>
+  <div id="shop-content">
+    <!-- Colors -->
+    <div class="shop-category">
+      <div class="shop-category-title">🎨 Button Colors</div>
+      <div class="shop-grid" id="shop-colors"></div>
+    </div>
+    <!-- Multipliers -->
+    <div class="shop-category">
+      <div class="shop-category-title">⚡ Click Power</div>
+      <div class="shop-grid" id="shop-multipliers"></div>
+    </div>
+    <!-- Titles -->
+    <div class="shop-category">
+      <div class="shop-category-title">👑 Titles</div>
+      <div class="shop-grid" id="shop-titles"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <h2>👑 Join the Kingdom</h2>
+    <p class="modal-sub">Sign in to save your score</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+    <div class="modal-msg" id="auth-msg"></div>
+    <div id="form-signin">
+      <div class="field"><label>Email</label><input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="field"><label>Password</label><input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn btn-primary" id="signin-submit-btn" onclick="handleSignIn()">Sign In</button>
+    </div>
+    <div id="form-signup" style="display:none">
+      <div class="field"><label>Display Name</label><input type="text" id="signup-name" placeholder="Your kingdom name"></div>
+      <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="field"><label>Password</label><input type="password" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password"></div>
+      <button class="btn btn-primary" id="signup-submit-btn" onclick="handleSignUp()">Create Account</button>
+    </div>
+    <div class="divider">or</div>
+    <button class="btn btn-github" style="width:100%;justify-content:center;gap:8px" onclick="handleGitHub()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Continue with GitHub
+    </button>
+  </div>
+</div>
+
+<!-- AVATAR MODAL -->
+<div class="modal-overlay" id="avatar-modal">
+  <div class="modal" style="max-width:340px">
+    <button class="modal-close" onclick="closeAvatarModal()">×</button>
+    <h2>🖼️ Change Avatar</h2>
+    <p class="modal-sub">Upload a photo or enter an image URL</p>
+    <img id="avatar-preview" src="" alt="" style="display:none">
+    <div id="avatar-preview-placeholder"></div>
+    <div class="modal-msg" id="avatar-msg"></div>
+    <div class="avatar-upload-area" onclick="document.getElementById('avatar-file-input').click()">
+      <div style="font-size:1.5rem;margin-bottom:6px">📁</div>
+      <div style="font-size:.85rem;color:var(--muted)">Click to upload photo</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">JPG, PNG, GIF — max 1MB</div>
+      <input type="file" id="avatar-file-input" accept="image/*" onchange="handleAvatarFile(event)">
+    </div>
+    <div class="divider">or enter URL</div>
+    <div class="field"><input type="url" id="avatar-url-input" placeholder="https://example.com/photo.jpg"></div>
+    <button class="btn btn-primary" onclick="saveAvatar()" id="save-avatar-btn">Save Avatar</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="removeAvatar()">Remove Avatar</button>
+  </div>
+</div>
 
 <footer>
   🏆 Monthly champion receives a congratulatory email.<br>
@@ -401,270 +294,432 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
+// ── Shop catalog ───────────────────────────────────
+const SHOP_ITEMS = {
+  colors: [
+    { id:'color_default', name:'Royal Purple', icon:'💜', desc:'Default royal color', price:0, color:'linear-gradient(135deg,#8060d0,#5030a0)' },
+    { id:'color_red',     name:'Crimson Fire', icon:'❤️', desc:'Burn with passion',  price:500,  color:'linear-gradient(135deg,#d04040,#901010)' },
+    { id:'color_green',   name:'Emerald',      icon:'💚', desc:'Nature\'s power',    price:500,  color:'linear-gradient(135deg,#30a060,#107030)' },
+    { id:'color_gold',    name:'Gold Rush',    icon:'⭐', desc:'Pure gold glory',    price:1000, color:'linear-gradient(135deg,#c09020,#806010)' },
+    { id:'color_blue',    name:'Ocean Deep',   icon:'💙', desc:'Calm but powerful',  price:800,  color:'linear-gradient(135deg,#3060c0,#103080)' },
+    { id:'color_pink',    name:'Cherry Blossom',icon:'🌸',desc:'Soft but fierce',    price:800,  color:'linear-gradient(135deg,#c040a0,#801060)' },
+  ],
+  multipliers: [
+    { id:'multi_1', name:'+1 per Click',  icon:'👆', desc:'Default click power', price:0,    value:1 },
+    { id:'multi_2', name:'+2 per Click',  icon:'✌️', desc:'Double power!',       price:2000, value:2 },
+    { id:'multi_5', name:'+5 per Click',  icon:'🖐️', desc:'Five times faster!',  price:8000, value:5 },
+    { id:'multi_10',name:'+10 per Click', icon:'💥', desc:'Legendary power!',    price:25000,value:10 },
+  ],
+  titles: [
+    { id:'title_none',    name:'No Title',    icon:'👤', desc:'Plain and simple',      price:0,    label:'',          color:'' },
+    { id:'title_knight',  name:'Knight',      icon:'⚔️', desc:'Brave and loyal',       price:300,  label:'⚔️ Knight', color:'#6080ff' },
+    { id:'title_warrior', name:'Warrior',     icon:'🛡️', desc:'Battle-hardened',       price:800,  label:'🛡️ Warrior',color:'#ff8040' },
+    { id:'title_lord',    name:'Lord',        icon:'🏰', desc:'Commands respect',      price:2000, label:'🏰 Lord',    color:'#a060ff' },
+    { id:'title_king',    name:'King',        icon:'👑', desc:'Rules the kingdom',     price:10000,label:'👑 King',    color:'#f0c040' },
+    { id:'title_legend',  name:'Legend',      icon:'🌟', desc:'Beyond all kings',      price:50000,label:'🌟 Legend',  color:'#ff40a0' },
+  ]
+};
+
 // ── State ──────────────────────────────────────────
 let currentUser = null;
 let totalScore = 0;
 let monthScore = 0;
 let currentTab = 'monthly';
+let currentPage = 'leaderboard';
 const currentMonth = new Date().toISOString().slice(0, 7);
 
-// ── DOM refs ───────────────────────────────────────
-const scoreDisplay      = document.getElementById('score-display');
-const monthScoreDisp    = document.getElementById('month-score-display');
-const clickBtn          = document.getElementById('click-btn');
-const loginGithubBtn    = document.getElementById('login-github-btn');
-const loginEmailBtn     = document.getElementById('login-email-btn');
-const logoutBtn         = document.getElementById('logout-btn');
-const userInfoEl        = document.getElementById('user-info');
-const userAvatarEl      = document.getElementById('user-avatar');
-const userNameEl        = document.getElementById('user-name');
-const lbBody            = document.getElementById('leaderboard-body');
-const lbTable           = document.getElementById('leaderboard-table');
-const lbEmpty           = document.getElementById('leaderboard-empty');
-const loadingEl         = document.getElementById('loading-overlay');
-const monthLabel        = document.getElementById('month-label');
-const modalOverlay      = document.getElementById('modal-overlay');
-const modalMsg          = document.getElementById('modal-msg');
+let equippedColor = 'color_default';
+let equippedMultiplier = 'multi_1';
+let equippedTitle = 'title_none';
+let customAvatar = '';
+let ownedItems = new Set(['color_default','multi_1','title_none']);
 
-// Month label
-monthLabel.textContent = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+let pendingAvatarData = null; // base64 or url
 
-// ── Modal ──────────────────────────────────────────
-loginEmailBtn.addEventListener('click', () => { openModal(); });
+// ── DOM ────────────────────────────────────────────
+const scoreDisplay   = document.getElementById('score-display');
+const monthScoreDisp = document.getElementById('month-score-display');
+const clickBtn       = document.getElementById('click-btn');
+const loginGithubBtn = document.getElementById('login-github-btn');
+const loginEmailBtn  = document.getElementById('login-email-btn');
+const logoutBtn      = document.getElementById('logout-btn');
+const userInfoEl     = document.getElementById('user-info');
+const userAvatarEl   = document.getElementById('user-avatar');
+const avatarPlacBar  = document.getElementById('avatar-placeholder-bar');
+const userTitleBar   = document.getElementById('user-title-bar');
+const userNameEl     = document.getElementById('user-name');
+const lbBody         = document.getElementById('leaderboard-body');
+const lbTable        = document.getElementById('leaderboard-table');
+const lbEmpty        = document.getElementById('leaderboard-empty');
+const loadingEl      = document.getElementById('loading-overlay');
+const monthLabel     = document.getElementById('month-label');
+const shopBalance    = document.getElementById('shop-balance');
+
+monthLabel.textContent = new Date().toLocaleString('default',{month:'long',year:'numeric'});
+
+// ── Page nav ───────────────────────────────────────
+function switchPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.page-tab').forEach((b,i) => b.classList.toggle('active', (i===0&&page==='leaderboard')||(i===1&&page==='shop')));
+  document.getElementById('page-leaderboard').classList.toggle('active', page==='leaderboard');
+  document.getElementById('page-shop').classList.toggle('active', page==='shop');
+  if (page==='shop') renderShop();
+}
+
+// ── Auth modal ─────────────────────────────────────
+loginEmailBtn.addEventListener('click', () => document.getElementById('auth-modal').classList.add('open'));
 loginGithubBtn.addEventListener('click', handleGitHub);
-document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+document.getElementById('auth-modal').addEventListener('click', e => { if(e.target===document.getElementById('auth-modal')) closeAuthModal(); });
 
-function openModal() {
-  modalOverlay.classList.add('open');
-  setModalMsg('', '');
+function switchAuthTab(tab) {
+  document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+  document.getElementById('form-signin').style.display = tab==='signin'?'block':'none';
+  document.getElementById('form-signup').style.display = tab==='signup'?'block':'none';
+  setAuthMsg('','');
 }
-function closeModal() {
-  modalOverlay.classList.remove('open');
-}
-function setModalMsg(text, type) {
-  modalMsg.textContent = text;
-  modalMsg.className = type;
-}
-function switchModalTab(tab) {
-  document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
-  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
-  document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none';
-  document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
-  setModalMsg('', '');
-}
+function setAuthMsg(text, type) { const el=document.getElementById('auth-msg'); el.textContent=text; el.className='modal-msg '+type; }
 
-// ── GitHub login ───────────────────────────────────
 async function handleGitHub() {
-  await supabaseClient.auth.signInWithOAuth({
-    provider: 'github',
-    options: { redirectTo: 'https://click-kingdom.vercel.app' }
-  });
+  await supabaseClient.auth.signInWithOAuth({ provider:'github', options:{ redirectTo:'https://click-kingdom.vercel.app' }});
 }
-
-// ── Email sign in ──────────────────────────────────
 async function handleSignIn() {
-  const email    = document.getElementById('signin-email').value.trim();
-  const password = document.getElementById('signin-password').value;
-  const btn      = document.getElementById('signin-submit-btn');
-  if (!email || !password) { setModalMsg('Please fill in all fields.', 'error'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Signing in…';
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  btn.disabled = false;
-  btn.textContent = 'Sign In';
-
-  if (error) { setModalMsg(error.message, 'error'); return; }
-  closeModal();
-  await onLogin(data.user);
+  const email=document.getElementById('signin-email').value.trim();
+  const password=document.getElementById('signin-password').value;
+  const btn=document.getElementById('signin-submit-btn');
+  if(!email||!password){setAuthMsg('Please fill in all fields.','error');return;}
+  btn.disabled=true; btn.textContent='Signing in…';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  btn.disabled=false; btn.textContent='Sign In';
+  if(error){setAuthMsg(error.message,'error');return;}
+  closeAuthModal(); await onLogin(data.user);
 }
-
-// ── Email sign up ──────────────────────────────────
 async function handleSignUp() {
-  const name     = document.getElementById('signup-name').value.trim();
-  const email    = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const btn      = document.getElementById('signup-submit-btn');
-
-  if (!name || !email || !password) { setModalMsg('Please fill in all fields.', 'error'); return; }
-  if (password.length < 6) { setModalMsg('Password must be at least 6 characters.', 'error'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Creating account…';
-  const { data, error } = await supabaseClient.auth.signUp({
-    email, password,
-    options: { data: { full_name: name } }
-  });
-  btn.disabled = false;
-  btn.textContent = 'Create Account';
-
-  if (error) { setModalMsg(error.message, 'error'); return; }
-
-  // If email confirmation required
-  if (data.user && !data.session) {
-    setModalMsg('✅ Check your email to confirm your account, then sign in.', 'success');
-    return;
-  }
-  closeModal();
-  if (data.user) await onLogin(data.user);
+  const name=document.getElementById('signup-name').value.trim();
+  const email=document.getElementById('signup-email').value.trim();
+  const password=document.getElementById('signup-password').value;
+  const btn=document.getElementById('signup-submit-btn');
+  if(!name||!email||!password){setAuthMsg('Please fill in all fields.','error');return;}
+  if(password.length<6){setAuthMsg('Password must be at least 6 characters.','error');return;}
+  btn.disabled=true; btn.textContent='Creating account…';
+  const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name:name}}});
+  btn.disabled=false; btn.textContent='Create Account';
+  if(error){setAuthMsg(error.message,'error');return;}
+  if(data.user&&!data.session){setAuthMsg('✅ Check your email to confirm, then sign in.','success');return;}
+  closeAuthModal(); if(data.user) await onLogin(data.user);
 }
+document.getElementById('signin-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleSignIn();});
+document.getElementById('signup-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleSignUp();});
 
-// ── Enter key support ──────────────────────────────
-document.getElementById('signin-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignIn(); });
-document.getElementById('signup-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignUp(); });
-
-// ── Session init ───────────────────────────────────
+// ── Session ────────────────────────────────────────
 async function init() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (session) {
-    await onLogin(session.user);
-  } else {
-    loadLeaderboard();
-  }
+  const {data:{session}} = await supabaseClient.auth.getSession();
+  if(session) await onLogin(session.user); else loadLeaderboard();
 }
 
 async function onLogin(user) {
   currentUser = user;
   const meta = user.user_metadata;
-  const displayName = meta.full_name || meta.user_name || meta.name || user.email?.split('@')[0] || 'Player';
+  const displayName = meta.full_name||meta.user_name||meta.name||user.email?.split('@')[0]||'Player';
 
-  userInfoEl.style.display = 'flex';
-  loginGithubBtn.style.display = 'none';
-  loginEmailBtn.style.display = 'none';
-  userAvatarEl.src = meta.avatar_url || '';
-  userNameEl.textContent = displayName;
+  userInfoEl.style.display='flex';
+  loginGithubBtn.style.display='none';
+  loginEmailBtn.style.display='none';
 
+  // Upsert scores row
   await supabaseClient.from('scores').upsert({
-    user_id: user.id,
-    username: displayName,
-    avatar_url: meta.avatar_url || '',
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'user_id', ignoreDuplicates: false });
+    user_id:user.id, username:displayName,
+    avatar_url:meta.avatar_url||'', updated_at:new Date().toISOString()
+  },{onConflict:'user_id',ignoreDuplicates:false});
 
-  const { data: row } = await supabaseClient
-    .from('scores').select('total_score').eq('user_id', user.id).single();
-  if (row) totalScore = row.total_score || 0;
+  // Load scores + equipped items
+  const {data:row} = await supabaseClient.from('scores').select('total_score,equipped_title,equipped_color,equipped_multiplier,custom_avatar').eq('user_id',user.id).single();
+  if(row) {
+    totalScore = row.total_score||0;
+    equippedColor = row.equipped_color||'color_default';
+    equippedMultiplier = row.equipped_multiplier||'multi_1';
+    equippedTitle = row.equipped_title||'title_none';
+    customAvatar = row.custom_avatar||'';
+  }
 
-  const { data: mrow } = await supabaseClient
-    .from('monthly_scores').select('score')
-    .eq('user_id', user.id).eq('month', currentMonth).single();
-  if (mrow) monthScore = mrow.score || 0;
+  const {data:mrow} = await supabaseClient.from('monthly_scores').select('score').eq('user_id',user.id).eq('month',currentMonth).single();
+  if(mrow) monthScore = mrow.score||0;
+
+  // Load owned items
+  const {data:items} = await supabaseClient.from('user_items').select('item_id').eq('user_id',user.id);
+  if(items) items.forEach(i => ownedItems.add(i.item_id));
 
   updateScoreUI();
+  updateUserBar(displayName);
+  applyEquipped();
   clickBtn.disabled = false;
   loadLeaderboard();
 }
 
-logoutBtn.addEventListener('click', async () => {
-  await supabaseClient.auth.signOut();
-  location.reload();
-});
+function updateUserBar(displayName) {
+  // Avatar
+  const avatarSrc = customAvatar || currentUser?.user_metadata?.avatar_url || '';
+  if(avatarSrc) {
+    userAvatarEl.src = avatarSrc;
+    userAvatarEl.style.display = 'block';
+    avatarPlacBar.style.display = 'none';
+  } else {
+    userAvatarEl.style.display = 'none';
+    avatarPlacBar.style.display = 'flex';
+    avatarPlacBar.textContent = (displayName||'?')[0].toUpperCase();
+  }
+  userNameEl.textContent = displayName;
 
-// ── Click handler ──────────────────────────────────
-let saveTimeout = null;
-clickBtn.addEventListener('click', (e) => {
-  if (!currentUser) return;
-  totalScore++;
-  monthScore++;
+  // Title
+  const titleItem = SHOP_ITEMS.titles.find(t=>t.id===equippedTitle);
+  if(titleItem && titleItem.label) {
+    userTitleBar.style.display='inline';
+    userTitleBar.textContent=titleItem.label;
+    userTitleBar.style.background=titleItem.color+'33';
+    userTitleBar.style.color=titleItem.color;
+    userTitleBar.style.border='1px solid '+titleItem.color+'66';
+  } else {
+    userTitleBar.style.display='none';
+  }
+}
+
+function applyEquipped() {
+  const colorItem = SHOP_ITEMS.colors.find(c=>c.id===equippedColor);
+  if(colorItem) clickBtn.style.background = colorItem.color;
+  const multiItem = SHOP_ITEMS.multipliers.find(m=>m.id===equippedMultiplier);
+  const val = multiItem?multiItem.value:1;
+  clickBtn.textContent = val>1 ? `👑 Click (+${val})` : '👑 Click to Earn';
+}
+
+logoutBtn.addEventListener('click', async()=>{ await supabaseClient.auth.signOut(); location.reload(); });
+
+// ── Click ──────────────────────────────────────────
+let saveTimeout=null;
+clickBtn.addEventListener('click', e=>{
+  if(!currentUser) return;
+  const multiItem = SHOP_ITEMS.multipliers.find(m=>m.id===equippedMultiplier);
+  const val = multiItem?multiItem.value:1;
+  totalScore+=val; monthScore+=val;
   updateScoreUI();
-  spawnFloat(e);
+  spawnFloat(e,val);
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(saveScores, 500);
+  saveTimeout=setTimeout(saveScores,500);
 });
 
 function updateScoreUI() {
   scoreDisplay.textContent = totalScore.toLocaleString();
   monthScoreDisp.textContent = monthScore.toLocaleString();
+  shopBalance.textContent = totalScore.toLocaleString();
   scoreDisplay.classList.remove('bump');
   void scoreDisplay.offsetWidth;
   scoreDisplay.classList.add('bump');
 }
 
 async function saveScores() {
-  if (!currentUser) return;
-  const meta = currentUser.user_metadata;
-  const displayName = meta.full_name || meta.user_name || meta.name || currentUser.email?.split('@')[0] || 'Player';
-
+  if(!currentUser) return;
+  const meta=currentUser.user_metadata;
+  const displayName=meta.full_name||meta.user_name||meta.name||currentUser.email?.split('@')[0]||'Player';
   await supabaseClient.from('scores').upsert({
-    user_id: currentUser.id, username: displayName,
-    avatar_url: meta.avatar_url || '',
-    total_score: totalScore, updated_at: new Date().toISOString()
-  }, { onConflict: 'user_id' });
-
+    user_id:currentUser.id, username:displayName,
+    avatar_url:customAvatar||meta.avatar_url||'',
+    total_score:totalScore, updated_at:new Date().toISOString(),
+    equipped_color:equippedColor, equipped_multiplier:equippedMultiplier,
+    equipped_title:equippedTitle, custom_avatar:customAvatar
+  },{onConflict:'user_id'});
   await supabaseClient.from('monthly_scores').upsert({
-    user_id: currentUser.id, username: displayName,
-    avatar_url: meta.avatar_url || '',
-    score: monthScore, month: currentMonth,
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'user_id,month' });
-
+    user_id:currentUser.id, username:displayName,
+    avatar_url:customAvatar||meta.avatar_url||'',
+    score:monthScore, month:currentMonth, updated_at:new Date().toISOString()
+  },{onConflict:'user_id,month'});
   loadLeaderboard();
 }
 
-// ── Float +1 ──────────────────────────────────────
-function spawnFloat(e) {
-  const el = document.createElement('div');
-  el.className = 'float-point';
-  el.textContent = '+1';
-  el.style.left = e.clientX - 10 + 'px';
-  el.style.top  = e.clientY - 10 + 'px';
+function spawnFloat(e,val) {
+  const el=document.createElement('div');
+  el.className='float-point';
+  el.textContent='+'+val;
+  el.style.left=e.clientX-10+'px';
+  el.style.top=e.clientY-10+'px';
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 700);
+  setTimeout(()=>el.remove(),700);
+}
+
+// ── Shop ───────────────────────────────────────────
+function renderShop() {
+  if(!currentUser) { document.getElementById('shop-login-msg').style.display='block'; document.getElementById('shop-content').style.display='none'; return; }
+  document.getElementById('shop-login-msg').style.display='none';
+  document.getElementById('shop-content').style.display='block';
+
+  renderShopCategory('shop-colors', SHOP_ITEMS.colors, 'color');
+  renderShopCategory('shop-multipliers', SHOP_ITEMS.multipliers, 'multi');
+  renderShopCategory('shop-titles', SHOP_ITEMS.titles, 'title');
+}
+
+function renderShopCategory(containerId, items, type) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = items.map(item => {
+    const owned = ownedItems.has(item.id);
+    const isEquipped = (type==='color'&&equippedColor===item.id)||(type==='multi'&&equippedMultiplier===item.id)||(type==='title'&&equippedTitle===item.id);
+    const canAfford = totalScore >= item.price;
+    let btnHtml='';
+    if(isEquipped) btnHtml=`<button class="shop-btn equipped-btn" disabled>✓ Equipped</button>`;
+    else if(owned)  btnHtml=`<button class="shop-btn equip" onclick="equipItem('${item.id}','${type}')">Equip</button>`;
+    else            btnHtml=`<button class="shop-btn buy" onclick="buyItem('${item.id}','${type}')" ${!canAfford?'disabled':''}>Buy</button>`;
+    return `<div class="shop-item ${isEquipped?'equipped':owned?'owned':''}">
+      ${owned&&!isEquipped?'<div class="owned-badge">Owned</div>':''}
+      <div class="shop-item-icon">${item.icon}</div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      <div class="shop-item-price ${item.price===0?'free':''}">${item.price===0?'Free':'⭐ '+item.price.toLocaleString()}</div>
+      ${btnHtml}
+    </div>`;
+  }).join('');
+}
+
+async function buyItem(itemId, type) {
+  if(!currentUser) return;
+  const allItems = [...SHOP_ITEMS.colors,...SHOP_ITEMS.multipliers,...SHOP_ITEMS.titles];
+  const item = allItems.find(i=>i.id===itemId);
+  if(!item||totalScore<item.price) return;
+
+  totalScore -= item.price;
+  updateScoreUI();
+  ownedItems.add(itemId);
+
+  await supabaseClient.from('user_items').upsert({user_id:currentUser.id,item_id:itemId},{onConflict:'user_id,item_id'});
+  await saveScores();
+  renderShop();
+}
+
+async function equipItem(itemId, type) {
+  if(!currentUser||!ownedItems.has(itemId)) return;
+  if(type==='color') equippedColor=itemId;
+  else if(type==='multi') equippedMultiplier=itemId;
+  else if(type==='title') equippedTitle=itemId;
+  applyEquipped();
+  const meta=currentUser.user_metadata;
+  const displayName=meta.full_name||meta.user_name||meta.name||currentUser.email?.split('@')[0]||'Player';
+  updateUserBar(displayName);
+  await saveScores();
+  renderShop();
+}
+
+// ── Avatar modal ───────────────────────────────────
+function openAvatarModal() {
+  if(!currentUser) return;
+  pendingAvatarData=null;
+  const meta=currentUser.user_metadata;
+  const displayName=meta.full_name||meta.user_name||meta.name||currentUser.email?.split('@')[0]||'Player';
+  const src=customAvatar||meta.avatar_url||'';
+  const preview=document.getElementById('avatar-preview');
+  const placeholder=document.getElementById('avatar-preview-placeholder');
+  if(src){preview.src=src;preview.style.display='block';placeholder.style.display='none';}
+  else{preview.style.display='none';placeholder.style.display='flex';placeholder.textContent=(displayName||'?')[0].toUpperCase();}
+  document.getElementById('avatar-url-input').value=customAvatar||'';
+  document.getElementById('avatar-modal').classList.add('open');
+}
+function closeAvatarModal() { document.getElementById('avatar-modal').classList.remove('open'); pendingAvatarData=null; }
+document.getElementById('avatar-modal').addEventListener('click',e=>{if(e.target===document.getElementById('avatar-modal'))closeAvatarModal();});
+
+function handleAvatarFile(event) {
+  const file=event.target.files[0];
+  if(!file) return;
+  if(file.size>1024*1024){setAvatarMsg('File too large. Max 1MB.','error');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    pendingAvatarData=e.target.result;
+    const preview=document.getElementById('avatar-preview');
+    preview.src=pendingAvatarData;
+    preview.style.display='block';
+    document.getElementById('avatar-preview-placeholder').style.display='none';
+    setAvatarMsg('','');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setAvatarMsg(text,type){const el=document.getElementById('avatar-msg');el.textContent=text;el.className='modal-msg '+type;}
+
+async function saveAvatar() {
+  if(!currentUser) return;
+  const urlInput=document.getElementById('avatar-url-input').value.trim();
+  const newAvatar = pendingAvatarData || urlInput || '';
+  const btn=document.getElementById('save-avatar-btn');
+  btn.disabled=true; btn.textContent='Saving…';
+  customAvatar=newAvatar;
+  await supabaseClient.from('scores').update({custom_avatar:customAvatar,avatar_url:customAvatar||currentUser.user_metadata.avatar_url||''}).eq('user_id',currentUser.id);
+  const meta=currentUser.user_metadata;
+  const displayName=meta.full_name||meta.user_name||meta.name||currentUser.email?.split('@')[0]||'Player';
+  updateUserBar(displayName);
+  btn.disabled=false; btn.textContent='Save Avatar';
+  setAvatarMsg('✅ Avatar updated!','success');
+  setTimeout(closeAvatarModal,1000);
+}
+
+async function removeAvatar() {
+  if(!currentUser) return;
+  customAvatar='';
+  await supabaseClient.from('scores').update({custom_avatar:'',avatar_url:currentUser.user_metadata.avatar_url||''}).eq('user_id',currentUser.id);
+  const meta=currentUser.user_metadata;
+  const displayName=meta.full_name||meta.user_name||meta.name||currentUser.email?.split('@')[0]||'Player';
+  updateUserBar(displayName);
+  closeAvatarModal();
 }
 
 // ── Leaderboard ────────────────────────────────────
 function switchTab(tab) {
-  currentTab = tab;
-  document.getElementById('tab-monthly').classList.toggle('active', tab === 'monthly');
-  document.getElementById('tab-alltime').classList.toggle('active', tab === 'alltime');
+  currentTab=tab;
+  document.getElementById('tab-monthly').classList.toggle('active',tab==='monthly');
+  document.getElementById('tab-alltime').classList.toggle('active',tab==='alltime');
   loadLeaderboard();
 }
 
 async function loadLeaderboard() {
-  lbTable.style.display = 'none';
-  lbEmpty.style.display = 'none';
-  loadingEl.style.display = 'block';
-
-  let rows = [];
-  if (currentTab === 'monthly') {
-    const { data } = await supabaseClient
-      .from('monthly_scores').select('user_id, username, avatar_url, score')
-      .eq('month', currentMonth).order('score', { ascending: false }).limit(100);
-    rows = data || [];
+  lbTable.style.display='none'; lbEmpty.style.display='none'; loadingEl.style.display='block';
+  let rows=[];
+  if(currentTab==='monthly'){
+    const {data}=await supabaseClient.from('monthly_scores').select('user_id,username,avatar_url,score').eq('month',currentMonth).order('score',{ascending:false}).limit(100);
+    rows=data||[];
   } else {
-    const { data } = await supabaseClient
-      .from('scores').select('user_id, username, avatar_url, total_score')
-      .order('total_score', { ascending: false }).limit(100);
-    rows = (data || []).map(r => ({ ...r, score: r.total_score }));
+    const {data}=await supabaseClient.from('scores').select('user_id,username,avatar_url,total_score,equipped_title,custom_avatar').order('total_score',{ascending:false}).limit(100);
+    rows=(data||[]).map(r=>({...r,score:r.total_score}));
+  }
+  loadingEl.style.display='none';
+  if(!rows.length){lbEmpty.style.display='block';return;}
+
+  // For monthly tab, load titles from scores table
+  let titleMap={};
+  if(currentTab==='monthly'){
+    const userIds=rows.map(r=>r.user_id);
+    const {data:scoreRows}=await supabaseClient.from('scores').select('user_id,equipped_title,custom_avatar').in('user_id',userIds);
+    if(scoreRows) scoreRows.forEach(r=>{titleMap[r.user_id]={title:r.equipped_title,avatar:r.custom_avatar};});
   }
 
-  loadingEl.style.display = 'none';
-  if (!rows.length) { lbEmpty.style.display = 'block'; return; }
-
-  lbBody.innerHTML = rows.map((r, i) => {
-    const rank = i + 1;
-    const isMe = currentUser && r.user_id === currentUser.id;
-    const rankClass = rank <= 3 ? `rank-${rank}` : '';
-    const avatar = r.avatar_url
-      ? `<img src="${r.avatar_url}" alt="">`
-      : `<div class="avatar-placeholder">${(r.username || '?')[0].toUpperCase()}</div>`;
-    const meBadge = isMe ? `<span class="me-tag">you</span>` : '';
-    return `<tr class="${isMe ? 'highlight-me' : ''}">
+  lbBody.innerHTML=rows.map((r,i)=>{
+    const rank=i+1;
+    const isMe=currentUser&&r.user_id===currentUser.id;
+    const rankClass=rank<=3?`rank-${rank}`:'';
+    const extraData=titleMap[r.user_id]||{};
+    const avatarSrc=extraData.avatar||r.custom_avatar||r.avatar_url||'';
+    const avatar=avatarSrc?`<img src="${avatarSrc}" alt="" onerror="this.style.display='none'">`:`<div class="avatar-placeholder">${(r.username||'?')[0].toUpperCase()}</div>`;
+    const meBadge=isMe?`<span class="me-tag">you</span>`:'';
+    const titleId=extraData.title||r.equipped_title||'title_none';
+    const titleItem=SHOP_ITEMS.titles.find(t=>t.id===titleId);
+    const titleBadge=titleItem&&titleItem.label?`<span class="player-title-tag" style="background:${titleItem.color}22;color:${titleItem.color};border:1px solid ${titleItem.color}44">${titleItem.label}</span>`:'';
+    return `<tr class="${isMe?'highlight-me':''}">
       <td class="rank-cell ${rankClass}">${rank===1?'👑':rank===2?'🥈':rank===3?'🥉':rank}</td>
-      <td><div class="player-cell">${avatar}<span>${escHtml(r.username||'Player')}${meBadge}</span></div></td>
+      <td><div class="player-cell">${avatar}<span>${escHtml(r.username||'Player')}${meBadge}${titleBadge}</span></div></td>
       <td class="score-cell">${Number(r.score||0).toLocaleString()}</td>
     </tr>`;
   }).join('');
-
-  lbTable.style.display = 'table';
+  lbTable.style.display='table';
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 init();
 </script>
 </body>
 </html>
+HTMLEOF
+echo "done"
