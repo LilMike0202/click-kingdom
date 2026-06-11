@@ -19,6 +19,8 @@
     --accent:    #7c5cbf;
     --text:      #e8e4f0;
     --muted:     #7070a0;
+    --error:     #e05050;
+    --success:   #40c080;
   }
 
   body {
@@ -33,10 +35,7 @@
   }
 
   /* ── Header ── */
-  header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
+  header { text-align: center; margin-bottom: 36px; }
   header h1 {
     font-family: 'Cinzel', serif;
     font-size: clamp(2rem, 6vw, 3.4rem);
@@ -48,34 +47,9 @@
     background-clip: text;
     line-height: 1.1;
   }
-  header p {
-    margin-top: 8px;
-    color: var(--muted);
-    font-size: .95rem;
-    letter-spacing: .02em;
-  }
+  header p { margin-top: 8px; color: var(--muted); font-size: .95rem; letter-spacing: .02em; }
 
-  /* ── Auth bar ── */
-  #auth-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 32px;
-    min-height: 40px;
-  }
-  #user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: .9rem;
-    color: var(--silver);
-  }
-  #user-info img {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    border: 2px solid var(--gold-dim);
-  }
-
+  /* ── Buttons ── */
   .btn {
     font-family: 'Inter', sans-serif;
     font-size: .85rem;
@@ -88,18 +62,133 @@
   }
   .btn:hover { opacity: .85; }
   .btn:active { transform: scale(.97); }
-  .btn-ghost {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-github {
-    background: #24292e;
-    color: white;
+  .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-github { background: #24292e; color: white; display: flex; align-items: center; gap: 8px; }
+  .btn-email  { background: var(--accent); color: white; }
+  .btn-primary { background: var(--accent); color: white; width: 100%; padding: 11px; font-size: .9rem; border-radius: 10px; }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ── Auth bar ── */
+  #auth-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
+  #user-info { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--silver); }
+  #user-info img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gold-dim); }
+
+  /* ── Modal overlay ── */
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #00000090;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #modal-overlay.open { display: flex; }
+
+  #modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+  }
+  #modal h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  #modal .modal-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: .82rem;
+    margin-bottom: 24px;
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 18px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  /* Modal tabs */
+  .modal-tabs {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .modal-tab {
+    flex: 1;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: .83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .modal-tab.active { background: var(--accent); color: white; }
+
+  /* Form fields */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: 5px; letter-spacing: .06em; text-transform: uppercase; }
+  .field input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: .9rem;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0;
+    color: var(--muted);
+    font-size: .75rem;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  #modal-msg {
+    font-size: .82rem;
+    text-align: center;
+    min-height: 20px;
+    margin-bottom: 10px;
+  }
+  #modal-msg.error   { color: var(--error); }
+  #modal-msg.success { color: var(--success); }
 
   /* ── Score panel ── */
   #score-panel {
@@ -111,14 +200,7 @@
     margin-bottom: 28px;
     min-width: 260px;
   }
-  #score-panel .label {
-    font-size: .78rem;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
+  #score-panel .label { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
   #score-display {
     font-family: 'Cinzel', serif;
     font-size: clamp(3rem, 10vw, 5rem);
@@ -127,18 +209,9 @@
     line-height: 1;
     transition: transform .08s;
   }
-  #score-display.bump {
-    transform: scale(1.12);
-  }
-  .month-score-row {
-    margin-top: 10px;
-    font-size: .82rem;
-    color: var(--muted);
-  }
-  .month-score-row span {
-    color: var(--silver);
-    font-weight: 600;
-  }
+  #score-display.bump { transform: scale(1.12); }
+  .month-score-row { margin-top: 10px; font-size: .82rem; color: var(--muted); }
+  .month-score-row span { color: var(--silver); font-weight: 600; }
 
   /* ── Click button ── */
   #click-btn {
@@ -153,26 +226,14 @@
     cursor: pointer;
     box-shadow: 0 8px 32px #5030a060;
     transition: transform .1s, box-shadow .1s;
-    position: relative;
-    overflow: hidden;
     margin-bottom: 36px;
     user-select: none;
   }
-  #click-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px #5030a080;
-  }
-  #click-btn:active {
-    transform: translateY(1px) scale(.97);
-    box-shadow: 0 4px 16px #5030a060;
-  }
-  #click-btn:disabled {
-    opacity: .4;
-    cursor: not-allowed;
-    transform: none;
-  }
+  #click-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px #5030a080; }
+  #click-btn:active { transform: translateY(1px) scale(.97); box-shadow: 0 4px 16px #5030a060; }
+  #click-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 
-  /* ── Float +1 animation ── */
+  /* ── Float +1 ── */
   .float-point {
     position: fixed;
     font-family: 'Cinzel', serif;
@@ -189,154 +250,41 @@
   }
 
   /* ── Leaderboard ── */
-  #leaderboard-section {
-    width: 100%;
-    max-width: 640px;
-  }
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-  .section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: .05em;
-  }
-  .month-badge {
-    font-size: .75rem;
-    background: var(--accent);
-    color: white;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-weight: 600;
-    letter-spacing: .04em;
-  }
+  #leaderboard-section { width: 100%; max-width: 640px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .section-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: .05em; }
+  .month-badge { font-size: .75rem; background: var(--accent); color: white; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
 
-  .board-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
+  .board-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
   .tab-btn {
-    font-family: 'Inter', sans-serif;
-    font-size: .82rem;
-    font-weight: 600;
-    padding: 6px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .15s;
+    font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600;
+    padding: 6px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; transition: all .15s;
   }
-  .tab-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-  #leaderboard-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  #leaderboard-table th {
-    font-size: .72rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-  }
+  #leaderboard-table { width: 100%; border-collapse: collapse; }
+  #leaderboard-table th { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
   #leaderboard-table th:last-child { text-align: right; }
-
-  #leaderboard-table td {
-    padding: 11px 12px;
-    border-bottom: 1px solid #1e1e38;
-    font-size: .9rem;
-    vertical-align: middle;
-  }
+  #leaderboard-table td { padding: 11px 12px; border-bottom: 1px solid #1e1e38; font-size: .9rem; vertical-align: middle; }
   #leaderboard-table td:last-child { text-align: right; }
 
-  .rank-cell {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    font-size: .85rem;
-    color: var(--muted);
-    width: 36px;
-  }
+  .rank-cell { font-family: 'Cinzel', serif; font-weight: 700; font-size: .85rem; color: var(--muted); width: 36px; }
   .rank-1 { color: var(--gold); }
   .rank-2 { color: var(--silver); }
   .rank-3 { color: var(--bronze); }
 
-  .player-cell {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .player-cell img {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-  }
-  .player-cell .avatar-placeholder {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .7rem;
-    font-weight: 700;
-    color: white;
-  }
-  .me-tag {
-    font-size: .68rem;
-    background: var(--accent);
-    color: white;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    margin-left: 4px;
-  }
+  .player-cell { display: flex; align-items: center; gap: 10px; }
+  .player-cell img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); }
+  .avatar-placeholder { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: white; }
+  .me-tag { font-size: .68rem; background: var(--accent); color: white; padding: 1px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
+  .score-cell { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); }
+  tr.highlight-me td { background: #1e1a3a; }
 
-  .score-cell {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    color: var(--gold);
-  }
+  #leaderboard-empty { text-align: center; color: var(--muted); padding: 32px; font-size: .9rem; }
+  #loading-overlay { color: var(--muted); font-size: .85rem; padding: 20px; text-align: center; }
 
-  tr.highlight-me td {
-    background: #1e1a3a;
-  }
-
-  #leaderboard-empty {
-    text-align: center;
-    color: var(--muted);
-    padding: 32px;
-    font-size: .9rem;
-  }
-
-  #loading-overlay {
-    color: var(--muted);
-    font-size: .85rem;
-    padding: 20px;
-    text-align: center;
-  }
-
-  /* ── Footer ── */
-  footer {
-    margin-top: 48px;
-    text-align: center;
-    color: var(--muted);
-    font-size: .78rem;
-    line-height: 1.8;
-  }
+  footer { margin-top: 48px; text-align: center; color: var(--muted); font-size: .78rem; line-height: 1.8; }
 
   @media (max-width: 480px) {
     #click-btn { padding: 18px 36px; font-size: 1.2rem; }
@@ -351,16 +299,69 @@
   <p>Click to conquer. Rise to the throne.</p>
 </header>
 
-<!-- Auth -->
+<!-- Auth bar -->
 <div id="auth-bar">
-  <button class="btn btn-github" id="login-btn">
+  <button class="btn btn-github" id="login-github-btn">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-    Login with GitHub
+    GitHub
   </button>
+  <button class="btn btn-email" id="login-email-btn">✉️ Email</button>
   <div id="user-info" style="display:none">
-    <img id="user-avatar" src="" alt="">
+    <img id="user-avatar" src="" alt="" onerror="this.style.display='none'">
     <span id="user-name"></span>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
+  </div>
+</div>
+
+<!-- Email auth modal -->
+<div id="modal-overlay">
+  <div id="modal">
+    <button class="modal-close" id="modal-close-btn">×</button>
+    <h2>👑 Join the Kingdom</h2>
+    <p class="modal-sub">Sign in to save your score</p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-signin" onclick="switchModalTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchModalTab('signup')">Create Account</button>
+    </div>
+
+    <div id="modal-msg"></div>
+
+    <!-- Sign in form -->
+    <div id="form-signin">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" id="signin-submit-btn" onclick="handleSignIn()">Sign In</button>
+    </div>
+
+    <!-- Sign up form -->
+    <div id="form-signup" style="display:none">
+      <div class="field">
+        <label>Display Name</label>
+        <input type="text" id="signup-name" placeholder="Your kingdom name" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" id="signup-submit-btn" onclick="handleSignUp()">Create Account</button>
+    </div>
+
+    <div class="divider">or continue with</div>
+    <button class="btn btn-github" style="width:100%;justify-content:center;gap:8px" onclick="handleGitHub()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Continue with GitHub
+    </button>
   </div>
 </div>
 
@@ -380,21 +381,13 @@
     <span class="section-title">🏆 Leaderboard</span>
     <span class="month-badge" id="month-label"></span>
   </div>
-
   <div class="board-tabs">
     <button class="tab-btn active" id="tab-monthly" onclick="switchTab('monthly')">This Month</button>
     <button class="tab-btn" id="tab-alltime" onclick="switchTab('alltime')">All Time</button>
   </div>
-
   <div id="loading-overlay">Loading leaderboard…</div>
   <table id="leaderboard-table" style="display:none">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Player</th>
-        <th>Score</th>
-      </tr>
-    </thead>
+    <thead><tr><th>#</th><th>Player</th><th>Score</th></tr></thead>
     <tbody id="leaderboard-body"></tbody>
   </table>
   <div id="leaderboard-empty" style="display:none">No scores yet. Be the first to click!</div>
@@ -413,39 +406,113 @@ let currentUser = null;
 let totalScore = 0;
 let monthScore = 0;
 let currentTab = 'monthly';
-const currentMonth = new Date().toISOString().slice(0, 7); // "2026-06"
+const currentMonth = new Date().toISOString().slice(0, 7);
 
 // ── DOM refs ───────────────────────────────────────
-const scoreDisplay    = document.getElementById('score-display');
-const monthScoreDisp  = document.getElementById('month-score-display');
-const clickBtn        = document.getElementById('click-btn');
-const loginBtn        = document.getElementById('login-btn');
-const logoutBtn       = document.getElementById('logout-btn');
-const userInfoEl      = document.getElementById('user-info');
-const userAvatarEl    = document.getElementById('user-avatar');
-const userNameEl      = document.getElementById('user-name');
-const lbBody          = document.getElementById('leaderboard-body');
-const lbTable         = document.getElementById('leaderboard-table');
-const lbEmpty         = document.getElementById('leaderboard-empty');
-const loadingEl       = document.getElementById('loading-overlay');
-const monthLabel      = document.getElementById('month-label');
+const scoreDisplay      = document.getElementById('score-display');
+const monthScoreDisp    = document.getElementById('month-score-display');
+const clickBtn          = document.getElementById('click-btn');
+const loginGithubBtn    = document.getElementById('login-github-btn');
+const loginEmailBtn     = document.getElementById('login-email-btn');
+const logoutBtn         = document.getElementById('logout-btn');
+const userInfoEl        = document.getElementById('user-info');
+const userAvatarEl      = document.getElementById('user-avatar');
+const userNameEl        = document.getElementById('user-name');
+const lbBody            = document.getElementById('leaderboard-body');
+const lbTable           = document.getElementById('leaderboard-table');
+const lbEmpty           = document.getElementById('leaderboard-empty');
+const loadingEl         = document.getElementById('loading-overlay');
+const monthLabel        = document.getElementById('month-label');
+const modalOverlay      = document.getElementById('modal-overlay');
+const modalMsg          = document.getElementById('modal-msg');
 
-// ── Month label ────────────────────────────────────
-const d = new Date();
-monthLabel.textContent = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+// Month label
+monthLabel.textContent = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
-// ── Auth ───────────────────────────────────────────
-loginBtn.addEventListener('click', async () => {
+// ── Modal ──────────────────────────────────────────
+loginEmailBtn.addEventListener('click', () => { openModal(); });
+loginGithubBtn.addEventListener('click', handleGitHub);
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+function openModal() {
+  modalOverlay.classList.add('open');
+  setModalMsg('', '');
+}
+function closeModal() {
+  modalOverlay.classList.remove('open');
+}
+function setModalMsg(text, type) {
+  modalMsg.textContent = text;
+  modalMsg.className = type;
+}
+function switchModalTab(tab) {
+  document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+  setModalMsg('', '');
+}
+
+// ── GitHub login ───────────────────────────────────
+async function handleGitHub() {
   await supabaseClient.auth.signInWithOAuth({
     provider: 'github',
     options: { redirectTo: 'https://click-kingdom.vercel.app' }
   });
-});
+}
 
-logoutBtn.addEventListener('click', async () => {
-  await supabaseClient.auth.signOut();
-  location.reload();
-});
+// ── Email sign in ──────────────────────────────────
+async function handleSignIn() {
+  const email    = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const btn      = document.getElementById('signin-submit-btn');
+  if (!email || !password) { setModalMsg('Please fill in all fields.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
+
+  if (error) { setModalMsg(error.message, 'error'); return; }
+  closeModal();
+  await onLogin(data.user);
+}
+
+// ── Email sign up ──────────────────────────────────
+async function handleSignUp() {
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const btn      = document.getElementById('signup-submit-btn');
+
+  if (!name || !email || !password) { setModalMsg('Please fill in all fields.', 'error'); return; }
+  if (password.length < 6) { setModalMsg('Password must be at least 6 characters.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account…';
+  const { data, error } = await supabaseClient.auth.signUp({
+    email, password,
+    options: { data: { full_name: name } }
+  });
+  btn.disabled = false;
+  btn.textContent = 'Create Account';
+
+  if (error) { setModalMsg(error.message, 'error'); return; }
+
+  // If email confirmation required
+  if (data.user && !data.session) {
+    setModalMsg('✅ Check your email to confirm your account, then sign in.', 'success');
+    return;
+  }
+  closeModal();
+  if (data.user) await onLogin(data.user);
+}
+
+// ── Enter key support ──────────────────────────────
+document.getElementById('signin-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignIn(); });
+document.getElementById('signup-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignUp(); });
 
 // ── Session init ───────────────────────────────────
 async function init() {
@@ -460,47 +527,48 @@ async function init() {
 async function onLogin(user) {
   currentUser = user;
   const meta = user.user_metadata;
+  const displayName = meta.full_name || meta.user_name || meta.name || user.email?.split('@')[0] || 'Player';
 
-  // Show user info
   userInfoEl.style.display = 'flex';
-  loginBtn.style.display = 'none';
+  loginGithubBtn.style.display = 'none';
+  loginEmailBtn.style.display = 'none';
   userAvatarEl.src = meta.avatar_url || '';
-  userNameEl.textContent = meta.full_name || meta.user_name || meta.name || 'Player';
+  userNameEl.textContent = displayName;
 
-  // Upsert player row
   await supabaseClient.from('scores').upsert({
     user_id: user.id,
-    username: meta.full_name || meta.user_name || meta.name || 'Player',
+    username: displayName,
     avatar_url: meta.avatar_url || '',
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id', ignoreDuplicates: false });
 
-  // Load existing scores
   const { data: row } = await supabaseClient
     .from('scores').select('total_score').eq('user_id', user.id).single();
-  if (row) { totalScore = row.total_score || 0; }
+  if (row) totalScore = row.total_score || 0;
 
   const { data: mrow } = await supabaseClient
     .from('monthly_scores').select('score')
     .eq('user_id', user.id).eq('month', currentMonth).single();
-  if (mrow) { monthScore = mrow.score || 0; }
+  if (mrow) monthScore = mrow.score || 0;
 
   updateScoreUI();
   clickBtn.disabled = false;
   loadLeaderboard();
 }
 
+logoutBtn.addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  location.reload();
+});
+
 // ── Click handler ──────────────────────────────────
 let saveTimeout = null;
-
 clickBtn.addEventListener('click', (e) => {
   if (!currentUser) return;
   totalScore++;
   monthScore++;
   updateScoreUI();
   spawnFloat(e);
-
-  // Debounce DB save (every 500ms)
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(saveScores, 500);
 });
@@ -509,36 +577,32 @@ function updateScoreUI() {
   scoreDisplay.textContent = totalScore.toLocaleString();
   monthScoreDisp.textContent = monthScore.toLocaleString();
   scoreDisplay.classList.remove('bump');
-  void scoreDisplay.offsetWidth; // reflow
+  void scoreDisplay.offsetWidth;
   scoreDisplay.classList.add('bump');
 }
 
 async function saveScores() {
   if (!currentUser) return;
-  const userId = currentUser.id;
   const meta = currentUser.user_metadata;
+  const displayName = meta.full_name || meta.user_name || meta.name || currentUser.email?.split('@')[0] || 'Player';
 
   await supabaseClient.from('scores').upsert({
-    user_id: userId,
-    username: meta.full_name || meta.user_name || meta.name || 'Player',
+    user_id: currentUser.id, username: displayName,
     avatar_url: meta.avatar_url || '',
-    total_score: totalScore,
-    updated_at: new Date().toISOString()
+    total_score: totalScore, updated_at: new Date().toISOString()
   }, { onConflict: 'user_id' });
 
   await supabaseClient.from('monthly_scores').upsert({
-    user_id: userId,
-    username: meta.full_name || meta.user_name || meta.name || 'Player',
+    user_id: currentUser.id, username: displayName,
     avatar_url: meta.avatar_url || '',
-    score: monthScore,
-    month: currentMonth,
+    score: monthScore, month: currentMonth,
     updated_at: new Date().toISOString()
   }, { onConflict: 'user_id,month' });
 
   loadLeaderboard();
 }
 
-// ── Float +1 ───────────────────────────────────────
+// ── Float +1 ──────────────────────────────────────
 function spawnFloat(e) {
   const el = document.createElement('div');
   el.className = 'float-point';
@@ -565,27 +629,18 @@ async function loadLeaderboard() {
   let rows = [];
   if (currentTab === 'monthly') {
     const { data } = await supabaseClient
-      .from('monthly_scores')
-      .select('user_id, username, avatar_url, score')
-      .eq('month', currentMonth)
-      .order('score', { ascending: false })
-      .limit(100);
+      .from('monthly_scores').select('user_id, username, avatar_url, score')
+      .eq('month', currentMonth).order('score', { ascending: false }).limit(100);
     rows = data || [];
   } else {
     const { data } = await supabaseClient
-      .from('scores')
-      .select('user_id, username, avatar_url, total_score')
-      .order('total_score', { ascending: false })
-      .limit(100);
+      .from('scores').select('user_id, username, avatar_url, total_score')
+      .order('total_score', { ascending: false }).limit(100);
     rows = (data || []).map(r => ({ ...r, score: r.total_score }));
   }
 
   loadingEl.style.display = 'none';
-
-  if (!rows.length) {
-    lbEmpty.style.display = 'block';
-    return;
-  }
+  if (!rows.length) { lbEmpty.style.display = 'block'; return; }
 
   lbBody.innerHTML = rows.map((r, i) => {
     const rank = i + 1;
@@ -595,19 +650,18 @@ async function loadLeaderboard() {
       ? `<img src="${r.avatar_url}" alt="">`
       : `<div class="avatar-placeholder">${(r.username || '?')[0].toUpperCase()}</div>`;
     const meBadge = isMe ? `<span class="me-tag">you</span>` : '';
-    return `
-      <tr class="${isMe ? 'highlight-me' : ''}">
-        <td class="rank-cell ${rankClass}">${rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</td>
-        <td><div class="player-cell">${avatar}<span>${escHtml(r.username || 'Player')}${meBadge}</span></div></td>
-        <td class="score-cell">${Number(r.score || 0).toLocaleString()}</td>
-      </tr>`;
+    return `<tr class="${isMe ? 'highlight-me' : ''}">
+      <td class="rank-cell ${rankClass}">${rank===1?'👑':rank===2?'🥈':rank===3?'🥉':rank}</td>
+      <td><div class="player-cell">${avatar}<span>${escHtml(r.username||'Player')}${meBadge}</span></div></td>
+      <td class="score-cell">${Number(r.score||0).toLocaleString()}</td>
+    </tr>`;
   }).join('');
 
   lbTable.style.display = 'table';
 }
 
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 init();
